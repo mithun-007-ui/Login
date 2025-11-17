@@ -1,42 +1,51 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Modal from './Modal'
 
-function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const handleLogin = () => {
-    if (email === "admin@gmail.com" && password === "admin123") {
-      navigate("/admin");
-      return;
+export default function Login() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [showError, setShowError] = useState(false)
+  const navigate = useNavigate()
+
+  const handleLogin = (e) => {
+    e?.preventDefault?.()
+    // Hardcoded credentials as requested:
+    // user / 123  -> role: user
+    // admin / 123 -> role: admin
+    if (username === 'user' && password === '123') {
+      localStorage.setItem('role', 'user')
+      navigate('/user')
+    } else if (username === 'admin' && password === '123') {
+      localStorage.setItem('role', 'admin')
+      navigate('/admin')
+    } else {
+      setShowError(true)
+      setTimeout(() => setShowError(false), 3000) // hide after 3s
     }
-    if (email === "user@gmail.com" && password === "user123") {
-      navigate("/user");
-      return;
-    }
-    alert("Wrong Email or Password!");
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
-  };
+  }
+
   return (
-    <div style={{ padding: "50px", textAlign: "center" }}>
-      <h2>Login Page</h2>
-      <input
-        type="text"
-        placeholder="Enter Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      /><br/><br/>
-
-      <input
-        type="password"
-        placeholder="Enter Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      /><br/><br/>
-     <button onClick={handleLogin}>Login</button>
+    <div className="bg-container">
+      <form className="login-box" onSubmit={handleLogin}>
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Submit</button>
+      </form>
+      {showError && <Modal message={"Invalid Username or Password"} />}
     </div>
-  );
+  )
 }
-export default Login;
